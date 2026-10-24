@@ -45,7 +45,7 @@ private:
 
 private:
 	std::mutex m_mutex;
-	Heap* m_next_free_heap = nullptr;
+	Heap* m_head = nullptr;
 
 };
 

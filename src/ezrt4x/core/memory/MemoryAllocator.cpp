@@ -32,8 +32,8 @@ Heap* HeapPool::acquire() noexcept {
 	{
 		std::scoped_lock lk { m_mutex };
 
-		if (Heap* heap = m_next_free_heap) {
-			m_next_free_heap = m_next_free_heap->m_next_heap;
+		if (Heap* heap = m_head) {
+			m_head = m_head->m_next_heap;
 			heap->m_next_heap = nullptr;
 			return heap;
 		}
@@ -43,13 +43,10 @@ Heap* HeapPool::acquire() noexcept {
 }
 void HeapPool::release(Heap* heap) noexcept {
 	assert(heap != nullptr);
-	if (!heap) {
-		return;
-	}
 
 	std::scoped_lock lk { m_mutex };
-	heap->m_next_heap = m_next_free_heap;
-	m_next_free_heap = heap;
+	heap->m_next_heap = m_head;
+	m_head = heap;
 }
 Heap* HeapPool::createHeap() noexcept {
 	constexpr DWORD flag = MEM_RESERVE | MEM_COMMIT;
@@ -62,10 +59,7 @@ Heap* HeapPool::createHeap() noexcept {
 	    nullptr,
 	    0);
 
-	if (!ptr) {
-		return nullptr;
-	}
-
+	assert(ptr != nullptr);
 	return new (ptr) Heap { };
 }
 }
