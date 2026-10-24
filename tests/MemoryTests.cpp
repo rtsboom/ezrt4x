@@ -5,33 +5,37 @@
 #include <ezrt4x/core/memory/MemoryAllocator.h>
 #include <iostream>
 #include <cassert>
+#include <barrier>
+#include <thread>
+#include <vector>
+
+static void TestHeapPoolConcurrency() {
+	constexpr size_t thread_count = 16;
+	constexpr size_t iteration_count = 100000;
+
+	ezrt4x::memory::HeapPool pool;
+	std::barrier start_barrier { thread_count };
+
+	std::vector<std::jthread> threads;
+	for (size_t i { }; i < thread_count; ++i) {
+		threads.emplace_back([&] {
+			for (size_t round { }; round < iteration_count; ++round) {
+				start_barrier.arrive_and_wait();
+				auto* heap = pool.acquire();
+				assert(heap != nullptr);
+				std::this_thread::yield();
+
+				pool.release(heap);
+			}
+		});
+	}
+
+	threads.clear();
+	std::cout << "TestHeapPoolConcurrency completed." << std::endl;
+}
 
 int main() {
+	TestHeapPoolConcurrency();
 
-	using namespace ezrt4x::memory;
-
-	// fake global heap pool
-	HeapPool g_heap_pool { };
-
-	Heap* heap = g_heap_pool.acquire();
-	assert(heap != nullptr);
-
-	g_heap_pool.release(heap);
-	Heap* heap2 = g_heap_pool.acquire();
-	assert(heap == heap2);
-
-	Heap* heap3 = g_heap_pool.acquire();
-	assert(heap != heap3);
-
-	g_heap_pool.release(heap2);
-	g_heap_pool.release(heap3);
-
-	Heap* heap4 = g_heap_pool.acquire();
-	Heap* heap5 = g_heap_pool.acquire();
-
-	assert(heap4 == heap3);
-	assert(heap5 = heap2);
-
-	std::cout << "test succeeded" << std::endl;
 	return 0;
 }

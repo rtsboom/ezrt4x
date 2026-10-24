@@ -19,7 +19,6 @@ public:
 
 namespace ezrt4x::memory {
 
-
 class Heap {
 public:
 	Heap() = default;
@@ -27,7 +26,6 @@ public:
 
 	void* alloc(size_t size, size_t alignment = 16) noexcept;
 	void dealloc(void* ptr) noexcept;
-
 
 private:
 	friend class HeapPool;
@@ -47,7 +45,9 @@ private:
 	std::mutex m_mutex;
 	Heap* m_head = nullptr;
 
+	int m_acquire_count { };
+	int m_release_count { };
+	int m_create_count { };
 };
-
 
 }

@@ -31,12 +31,15 @@ namespace {
 Heap* HeapPool::acquire() noexcept {
 	{
 		std::scoped_lock lk { m_mutex };
+		++m_acquire_count;
 
 		if (Heap* heap = m_head) {
 			m_head = m_head->m_next_heap;
 			heap->m_next_heap = nullptr;
 			return heap;
 		}
+
+		++m_create_count;
 	}
 
 	return createHeap();
@@ -47,13 +50,16 @@ void HeapPool::release(Heap* heap) noexcept {
 	std::scoped_lock lk { m_mutex };
 	heap->m_next_heap = m_head;
 	m_head = heap;
+
+	++m_release_count;
 }
 Heap* HeapPool::createHeap() noexcept {
+	constexpr size_t size = sizeof(Heap);
 	constexpr DWORD flag = MEM_RESERVE | MEM_COMMIT;
 	void* ptr = ::VirtualAlloc2(
 	    nullptr,
 	    nullptr,
-	    4 * 1024,
+	    size,
 	    flag,
 	    PAGE_READWRITE,
 	    nullptr,
