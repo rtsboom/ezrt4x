@@ -2,7 +2,7 @@
 // Created by rtsboom on 2026-10-22.
 //
 
-#include <ezrt4x/core/memory/MemoryAllocator.h>
+#include <ezrt4x/core/memory/Heap.h>
 #include <iostream>
 #include <cassert>
 #include <barrier>
