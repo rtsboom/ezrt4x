@@ -38,7 +38,7 @@ bool commit(void* address, size_t const size) noexcept {
 bool decommit(void* address, size_t const size) noexcept {
 	return VirtualFree(address, size, MEM_DECOMMIT);
 }
-bool release(void* address, size_t size) noexcept {
-	return VirtualFree(address, size, MEM_RELEASE);
+bool release(void* address) noexcept {
+	return VirtualFree(address, 0, MEM_RELEASE);
 }
 } // ezrt4x::virtual_memory
