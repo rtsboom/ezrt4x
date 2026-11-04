@@ -5,17 +5,16 @@
 /*
  * PageMap Leaf Design
  *
- * - Leaves exist conceptually; no separate PageMapLeaf structure is needed.
- * - Each Arena stores PageEntry* arrays in its metadata region.
- * - These arrays are divided into logical Leaves and registered in the
- *   corresponding slots of the global PageMap.
+ * - Leaves are embedded in the metadata region of each Arena.
+ * - Each Leaf is a contiguous array of PageEntry pointers,
+ *   without a separate PageMapLeaf structure.
  * - Each Leaf occupies 64 KiB and covers 512 MiB of virtual address space.
- * - Arenas must be aligned to 512 MiB, with sizes that are multiples of 512 MiB.
- * - All required Leaves are committed and initialized during Arena creation,
- *   before being registered in the PageMap.
+ * - Arenas must be 512 MiB-aligned, with sizes that are multiples of 512 MiB.
+ * - All Leaves are committed and initialized during Arena creation,
+ *   then registered in the corresponding global PageMap slots.
  *
  * This design aligns Arena boundaries with PageMap Leaf boundaries,
- * eliminating per-Leaf allocation and commit synchronization.
+ * eliminating separate Leaf allocations and commit synchronization.
  */
 
 
