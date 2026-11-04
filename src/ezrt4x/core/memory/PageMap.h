@@ -6,7 +6,7 @@
  * PageMap Leaf Design
  *
  * - Leaves exist conceptually; no separate PageMapLeaf structure is needed.
- * - Each Arena stores PageEntry* arrays in its metadata region.
+ * - Each Arena stores PageEntry arrays in its metadata region.
  * - These arrays are divided into logical Leaves and registered in the
  *   corresponding slots of the global PageMap.
  * - Each Leaf occupies 64 KiB and covers 512 MiB of virtual address space.
