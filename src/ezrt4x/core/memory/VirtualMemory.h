@@ -12,6 +12,6 @@ bool commit(void* address, size_t size) noexcept;
 
 bool decommit(void* address, size_t size) noexcept;
 
-bool release(void* address) noexcept;
+bool release(void* address, size_t size = 0) noexcept;
 
 } // ezrt4x::virtual_memory
